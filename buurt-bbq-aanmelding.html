@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Buurt BBQ — 12 september 2025</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: #f5f4f0;
+      color: #1a1a1a;
+      min-height: 100vh;
+      padding: 2rem 1rem;
+    }
+
+    .wrap {
+      max-width: 560px;
+      margin: 0 auto;
+    }
+
+    .hero {
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+    .hero-icon { font-size: 40px; margin-bottom: 0.5rem; }
+    .hero h1 { font-size: 22px; font-weight: 600; margin-bottom: 0.25rem; }
+    .hero p { font-size: 14px; color: #666; }
+
+    .card {
+      background: #fff;
+      border: 1px solid #e5e3dc;
+      border-radius: 14px;
+      padding: 1.25rem;
+      margin-bottom: 1rem;
+    }
+
+    .section-head {
+      font-size: 12px;
+      font-weight: 600;
+      color: #888;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      margin-bottom: 0.85rem;
+    }
+
+    .row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    @media (max-width: 420px) { .row { grid-template-columns: 1fr; } }
+
+    label.field-label {
+      display: block;
+      font-size: 13px;
+      color: #555;
+      margin-bottom: 5px;
+    }
+    label.field-label strong { color: #1a1a1a; }
+
+    input[type="text"] {
+      width: 100%;
+      padding: 9px 12px;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      font-size: 15px;
+      outline: none;
+      transition: border-color 0.15s;
+      background: #fff;
+      color: #1a1a1a;
+    }
+    input[type="text"]:focus { border-color: #1D9E75; }
+
+    .error { font-size: 12px; color: #c0392b; margin-top: 4px; display: none; }
+
+    /* Steppers */
+    .stepper { display: flex; align-items: center; gap: 12px; margin-top: 6px; }
+    .stepper button {
+      width: 34px; height: 34px;
+      border-radius: 50%;
+      border: 1px solid #ddd;
+      background: #f5f4f0;
+      font-size: 20px;
+      cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      line-height: 1;
+      color: #333;
+      transition: background 0.1s;
+    }
+    .stepper button:hover { background: #e8e6e0; }
+    .stepper .count { font-size: 20px; font-weight: 600; min-width: 28px; text-align: center; }
+    .price-hint { font-size: 12px; color: #999; margin-top: 3px; }
+
+    /* Summary */
+    .summary {
+      background: #f5f4f0;
+      border-radius: 10px;
+      padding: 0.9rem 1rem;
+      margin-top: 1rem;
+    }
+    .summary-row { display: flex; justify-content: space-between; font-size: 14px; color: #666; padding: 3px 0; }
+    .summary-total {
+      display: flex; justify-content: space-between;
+      font-size: 16px; font-weight: 600; color: #1a1a1a;
+      border-top: 1px solid #ddd;
+      margin-top: 8px; padding-top: 8px;
+    }
+
+    /* Toggle */
+    .toggle-row { display: flex; align-items: center; justify-content: space-between; }
+    .toggle-label { font-size: 15px; font-weight: 500; }
+    .toggle-sub { font-size: 12px; color: #888; margin-top: 2px; }
+    .toggle { position: relative; display: inline-block; width: 46px; height: 26px; flex-shrink: 0; }
+    .toggle input { opacity: 0; width: 0; height: 0; }
+    .slider-t {
+      position: absolute; cursor: pointer;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: #ccc; border-radius: 26px;
+      transition: 0.2s;
+    }
+    .slider-t:before {
+      position: absolute; content: "";
+      height: 20px; width: 20px;
+      left: 3px; bottom: 3px;
+      background: white; border-radius: 50%;
+      transition: 0.2s;
+    }
+    input:checked + .slider-t { background: #1D9E75; }
+    input:checked + .slider-t:before { transform: translateX(20px); }
+
+    /* Submit */
+    .submit-btn {
+      width: 100%; padding: 13px;
+      background: #1D9E75; color: white;
+      border: none; border-radius: 10px;
+      font-size: 16px; font-weight: 600;
+      cursor: pointer; margin-top: 1rem;
+      transition: opacity 0.15s;
+    }
+    .submit-btn:hover { opacity: 0.88; }
+
+    /* Success */
+    .success-card {
+      background: #fff;
+      border: 1px solid #e5e3dc;
+      border-radius: 14px;
+      padding: 2rem 1.5rem;
+      text-align: center;
+    }
+    .success-check {
+      width: 56px; height: 56px;
+      background: #E1F5EE; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      margin: 0 auto 1rem;
+    }
+    .success-check svg { width: 28px; height: 28px; }
+    .success-card h2 { font-size: 20px; font-weight: 600; margin-bottom: 0.4rem; }
+    .success-card p { font-size: 14px; color: #666; line-height: 1.6; }
+    .amount-pill {
+      display: inline-block;
+      background: #f5f4f0;
+      border: 1px solid #e0ded8;
+      border-radius: 20px;
+      padding: 5px 16px;
+      font-size: 16px; font-weight: 600;
+      margin: 0.75rem 0;
+    }
+    .divider { border: none; border-top: 1px solid #eee; margin: 1.1rem 0; }
+
+    .tikkie-btn {
+      display: flex; align-items: center; justify-content: center; gap: 10px;
+      width: 100%; padding: 13px;
+      background: #FF6B35; color: white;
+      border: none; border-radius: 10px;
+      font-size: 15px; font-weight: 600;
+      cursor: pointer; text-decoration: none;
+      transition: opacity 0.15s;
+    }
+    .tikkie-btn:hover { opacity: 0.88; }
+    .tikkie-logo {
+      width: 24px; height: 24px;
+      background: white; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+    }
+    .tikkie-note { font-size: 12px; color: #999; margin-top: 0.6rem; }
+
+    .new-btn {
+      background: none;
+      border: 1px solid #ddd;
+      color: #666;
+      border-radius: 8px;
+      padding: 8px 20px;
+      font-size: 13px;
+      cursor: pointer;
+      margin-top: 1rem;
+    }
+    .new-btn:hover { background: #f5f4f0; }
+
+    /* Entries */
+    .entries-section {
+      margin-top: 2rem;
+      border-top: 1px solid #e0ded8;
+      padding-top: 1.5rem;
+    }
+    .stats-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 1rem; }
+    .stat {
+      background: #fff;
+      border: 1px solid #e5e3dc;
+      border-radius: 10px;
+      padding: 0.85rem;
+      text-align: center;
+    }
+    .stat-num { font-size: 24px; font-weight: 700; }
+    .stat-label { font-size: 11px; color: #888; margin-top: 2px; }
+    .entries-title {
+      font-size: 12px; font-weight: 600; color: #888;
+      text-transform: uppercase; letter-spacing: 0.06em;
+      margin-bottom: 0.6rem;
+    }
+    .entry-item {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 9px 0;
+      border-bottom: 1px solid #eee;
+      font-size: 13px;
+    }
+    .entry-name { font-weight: 600; color: #1a1a1a; }
+    .entry-addr { font-weight: 400; color: #888; }
+    .entry-detail { color: #888; margin-top: 1px; }
+    .entry-veg {
+      background: #E1F5EE; color: #0F6E56;
+      font-size: 11px; padding: 2px 8px;
+      border-radius: 20px; white-space: nowrap;
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="hero">
+      <div class="hero-icon">🔥</div>
+      <h1>Buurt BBQ — 12 september 2025</h1>
+      <p>Geef je op en geef aan met hoeveel personen je komt</p>
+    </div>
+
+    <div id="form-view">
+      <div class="card">
+        <div class="section-head">Jouw gegevens</div>
+        <div class="row">
+          <div>
+            <label class="field-label"><strong>Naam</strong> *</label>
+            <input type="text" id="name" placeholder="Voor- en achternaam" />
+            <div class="error" id="name-err">Vul je naam in</div>
+          </div>
+          <div>
+            <label class="field-label"><strong>Straat + huisnummer</strong> *</label>
+            <input type="text" id="address" placeholder="Dorpsstraat 12" />
+            <div class="error" id="address-err">Vul je adres in</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="section-head">Aantal personen</div>
+        <div class="row">
+          <div>
+            <label class="field-label"><strong>Volwassenen</strong></label>
+            <div class="price-hint">€27,50 per persoon</div>
+            <div class="stepper">
+              <button onclick="change('adults',-1)">−</button>
+              <span class="count" id="adults-count">1</span>
+              <button onclick="change('adults',1)">+</button>
+            </div>
+          </div>
+          <div>
+            <label class="field-label"><strong>Kinderen</strong></label>
+            <div class="price-hint">€7,50 per kind</div>
+            <div class="stepper">
+              <button onclick="change('kids',-1)">−</button>
+              <span class="count" id="kids-count">0</span>
+              <button onclick="change('kids',1)">+</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="summary">
+          <div class="summary-row"><span id="adults-line">1 volwassene × €27,50</span><span id="adults-amount">€27,50</span></div>
+          <div class="summary-row" id="kids-row" style="display:none"><span id="kids-line"></span><span id="kids-amount"></span></div>
+          <div class="summary-total"><span>Totaal</span><span id="total">€27,50</span></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="toggle-row">
+          <div>
+            <div class="toggle-label">Vegetarisch</div>
+            <div class="toggle-sub">Geef aan als (een deel van) je gezelschap vegetarisch eet</div>
+          </div>
+          <label class="toggle">
+            <input type="checkbox" id="veg-toggle" onchange="renderSummary()" />
+            <span class="slider-t"></span>
+          </label>
+        </div>
+        <div id="veg-detail" style="display:none; margin-top:14px;">
+          <label class="field-label"><strong>Hoeveel personen vegetarisch?</strong></label>
+          <div class="stepper">
+            <button onclick="change('veg',-1)">−</button>
+            <span class="count" id="veg-count">1</span>
+            <button onclick="change('veg',1)">+</button>
+          </div>
+        </div>
+      </div>
+
+      <button class="submit-btn" onclick="submit()">Aanmelden voor de BBQ</button>
+    </div>
+
+    <div id="success-view" style="display:none">
+      <div class="success-card">
+        <div class="success-check">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#1D9E75" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="20 6 9 17 4 12"/>
+          </svg>
+        </div>
+        <h2>Je bent aangemeld!</h2>
+        <p>Bedankt <strong id="success-name"></strong>, we zien je op 12 september.</p>
+        <div class="amount-pill" id="success-amount"></div>
+        <hr class="divider">
+        <p style="font-size:14px;color:#666;margin-bottom:0.75rem">Betaal eenvoudig via Tikkie:</p>
+        <a id="tikkie-link" class="tikkie-btn" href="#" target="_blank">
+          <span class="tikkie-logo">
+            <svg viewBox="0 0 24 24" width="14" height="14" fill="#FF6B35">
+              <circle cx="12" cy="12" r="10"/>
+              <path d="M8 12l3 3 5-5" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+            </svg>
+          </span>
+          Betalen via Tikkie
+        </a>
+        <p class="tikkie-note">Klik op de knop om het Tikkie te openen. Voer het bovenstaande bedrag in.</p>
+        <button class="new-btn" onclick="newEntry()">Nog iemand aanmelden</button>
+      </div>
+    </div>
+
+    <div id="entries-section" class="entries-section" style="display:none">
+      <div class="stats-row">
+        <div class="stat"><div class="stat-num" id="s-total">0</div><div class="stat-label">aanmeldingen</div></div>
+        <div class="stat"><div class="stat-num" id="s-adults">0</div><div class="stat-label">volwassenen</div></div>
+        <div class="stat"><div class="stat-num" id="s-kids">0</div><div class="stat-label">kinderen</div></div>
+      </div>
+      <div class="entries-title">Aangemelden</div>
+      <div id="entries-list"></div>
+    </div>
+  </div>
+
+  <script>
+    // ⚙️ Pas hier je eigen Tikkie-link aan:
+    const TIKKIE_URL = 'https://tikkie.me/voorbeeld';
+
+    let adults = 1, kids = 0, veg = 1;
+    let entries = [];
+
+    try { const s = localStorage.getItem('bbq_entries_sep12'); if (s) entries = JSON.parse(s); } catch(e) {}
+    function save() { try { localStorage.setItem('bbq_entries_sep12', JSON.stringify(entries)); } catch(e) {} }
+
+    function change(type, delta) {
+      if (type === 'adults') {
+        adults = Math.max(1, adults + delta);
+        document.getElementById('adults-count').textContent = adults;
+        if (veg > adults + kids) { veg = adults + kids; document.getElementById('veg-count').textContent = veg; }
+      } else if (type === 'kids') {
+        kids = Math.max(0, kids + delta);
+        document.getElementById('kids-count').textContent = kids;
+        if (veg > adults + kids) { veg = Math.max(1, adults + kids); document.getElementById('veg-count').textContent = veg; }
+      } else if (type === 'veg') {
+        veg = Math.max(1, Math.min(adults + kids, veg + delta));
+        document.getElementById('veg-count').textContent = veg;
+      }
+      renderSummary();
+    }
+
+    function fmt(n) { return '€' + n.toFixed(2).replace('.', ','); }
+
+    function renderSummary() {
+      const isVeg = document.getElementById('veg-toggle').checked;
+      document.getElementById('veg-detail').style.display = isVeg ? 'block' : 'none';
+      document.getElementById('adults-line').textContent = adults + ' volwassen' + (adults === 1 ? 'e' : 'en') + ' × €27,50';
+      document.getElementById('adults-amount').textContent = fmt(adults * 27.5);
+      if (kids > 0) {
+        document.getElementById('kids-row').style.display = 'flex';
+        document.getElementById('kids-line').textContent = kids + ' kind' + (kids === 1 ? '' : 'eren') + ' × €7,50';
+        document.getElementById('kids-amount').textContent = fmt(kids * 7.5);
+      } else {
+        document.getElementById('kids-row').style.display = 'none';
+      }
+      document.getElementById('total').textContent = fmt(adults * 27.5 + kids * 7.5);
+    }
+
+    function validate() {
+      let ok = true;
+      const name = document.getElementById('name').value.trim();
+      const address = document.getElementById('address').value.trim();
+      document.getElementById('name-err').style.display = name ? 'none' : 'block';
+      if (!name) ok = false;
+      document.getElementById('address-err').style.display = address ? 'none' : 'block';
+      if (!address) ok = false;
+      return ok;
+    }
+
+    function submit() {
+      if (!validate()) return;
+      const isVeg = document.getElementById('veg-toggle').checked;
+      const total = adults * 27.5 + kids * 7.5;
+      const entry = {
+        name: document.getElementById('name').value.trim(),
+        address: document.getElementById('address').value.trim(),
+        adults, kids,
+        veg: isVeg ? veg : 0,
+        total
+      };
+      entries.push(entry);
+      save();
+
+      document.getElementById('form-view').style.display = 'none';
+      document.getElementById('success-view').style.display = 'block';
+      document.getElementById('success-name').textContent = entry.name.split(' ')[0];
+      document.getElementById('success-amount').textContent = fmt(total);
+      document.getElementById('tikkie-link').href = TIKKIE_URL;
+
+      renderEntries();
+      document.getElementById('entries-section').style.display = 'block';
+    }
+
+    function newEntry() {
+      adults = 1; kids = 0; veg = 1;
+      document.getElementById('name').value = '';
+      document.getElementById('address').value = '';
+      document.getElementById('veg-toggle').checked = false;
+      document.getElementById('adults-count').textContent = '1';
+      document.getElementById('kids-count').textContent = '0';
+      document.getElementById('veg-count').textContent = '1';
+      document.getElementById('success-view').style.display = 'none';
+      document.getElementById('form-view').style.display = 'block';
+      renderSummary();
+    }
+
+    function renderEntries() {
+      const totalAdults = entries.reduce((a,e) => a + e.adults, 0);
+      const totalKids = entries.reduce((a,e) => a + e.kids, 0);
+      document.getElementById('s-total').textContent = entries.length;
+      document.getElementById('s-adults').textContent = totalAdults;
+      document.getElementById('s-kids').textContent = totalKids;
+      document.getElementById('entries-list').innerHTML = entries.slice().reverse().map(e => `
+        <div class="entry-item">
+          <div>
+            <div class="entry-name">${e.name} <span class="entry-addr">(${e.address})</span></div>
+            <div class="entry-detail">${e.adults} volw.${e.kids > 0 ? ' · ' + e.kids + ' kind' + (e.kids > 1 ? 'eren' : '') : ''} · ${fmt(e.total)}</div>
+          </div>
+          ${e.veg > 0 ? `<span class="entry-veg">veg (${e.veg})</span>` : ''}
+        </div>`).join('');
+    }
+
+    if (entries.length > 0) { renderEntries(); document.getElementById('entries-section').style.display = 'block'; }
+    renderSummary();
+  </script>
+</body>
+</html>
