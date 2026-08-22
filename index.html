@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Buurt BBQ — 12 september 2025</title>
+  <title>Buurt BBQ — 12 september 2026</title>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -236,7 +236,7 @@
   <div class="wrap">
     <div class="hero">
       <div class="hero-icon">🔥</div>
-      <h1>Buurt BBQ — 12 september 2025</h1>
+      <h1>Buurt BBQ — 12 september 2026</h1>
       <p>Geef je op en geef aan met hoeveel personen je komt</p>
     </div>
 
@@ -322,7 +322,7 @@
         <p>Bedankt <strong id="success-name"></strong>, we zien je op 12 september.</p>
         <div class="amount-pill" id="success-amount"></div>
         <hr class="divider">
-        <p style="font-size:14px;color:#666;margin-bottom:0.75rem">Betaal eenvoudig via Tikkie:</p>
+        <p style="font-size:14px;color:#666;margin-bottom:0.75rem">Betaal eenvoudig via een betaallink van penningmeester Niels:</p>
         <a id="tikkie-link" class="tikkie-btn" href="#" target="_blank">
           <span class="tikkie-logo">
             <svg viewBox="0 0 24 24" width="14" height="14" fill="#FF6B35">
@@ -330,9 +330,9 @@
               <path d="M8 12l3 3 5-5" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
             </svg>
           </span>
-          Betalen via Tikkie
+          Betalen via ING-Betaallink
         </a>
-        <p class="tikkie-note">Klik op de knop om het Tikkie te openen. Voer het bovenstaande bedrag in.</p>
+        <p class="tikkie-note">Klik op de knop om de betaallink te openen. Voer het bovenstaande bedrag in.<br>Of gebruik deze link: <a href="https://www.ing.nl/payreq/m/?trxid=88kqYEJC2RWor1jDQZcl-LAtZMfrKjQ86" target="_blank" style="color:#FF6B35;word-break:break-all;">https://www.ing.nl/payreq/m/?trxid=88kqYEJC2RWor1jDQZcl-LAtZMfrKjQ86</a></p>
         <button class="new-btn" onclick="newEntry()">Nog iemand aanmelden</button>
       </div>
     </div>
@@ -350,7 +350,9 @@
 
   <script>
     // ⚙️ Pas hier je eigen Tikkie-link aan:
-    const TIKKIE_URL = 'https://tikkie.me/voorbeeld';
+    const TIKKIE_URL = 'https://www.ing.nl/payreq/m/?trxid=88kqYEJC2RWor1jDQZcl-LAtZMfrKjQ86';
+    // ⚙️ Formspree-formulier: stuurt een e-mail bij elke nieuwe aanmelding
+    const FORMSPREE_URL = 'https://formspree.io/f/moeablow';
 
     let adults = 1, kids = 0, veg = 1;
     let entries = [];
@@ -415,6 +417,20 @@
       };
       entries.push(entry);
       save();
+
+      // Stuur een mailtje naar de organisator via Formspree (blokkeert de UI niet als dit mislukt)
+      fetch(FORMSPREE_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+        body: JSON.stringify({
+          naam: entry.name,
+          adres: entry.address,
+          volwassenen: entry.adults,
+          kinderen: entry.kids,
+          vegetarisch: entry.veg,
+          bedrag: fmt(entry.total)
+        })
+      }).catch(() => {});
 
       document.getElementById('form-view').style.display = 'none';
       document.getElementById('success-view').style.display = 'block';
